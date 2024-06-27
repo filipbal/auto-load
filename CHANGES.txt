@@ -1,0 +1,17 @@
+v03
+27/06/2024
+- rewritten README
+25/06/2024
+- changed loader_directory
+06/06/2024
+- displays total number of connected devices (unused)
+
+v02
+10/05/2024
+- improved UX/UI
+- app informs user about com port status
+(firmware version/access denied/unknown)
+
+v01
+27/10/2023
+- initial version
