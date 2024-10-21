@@ -19,7 +19,7 @@ class COMPortSelectionWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle(f'AutoLoad v{AL_VERSION}')
+        self.setWindowTitle(f'{NAME_AUTOLOAD} v{VERSION_AUTOLOAD}')
         self.setGeometry(100, 100, 400, 400)
 
         layout = QVBoxLayout()
