@@ -6,7 +6,7 @@ import threading
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QCheckBox, QComboBox
 
 NAME_AUTOLOAD = 'AutoLoad'
-VERSION_AUTOLOAD = '0.3.1'
+VERSION_AUTOLOAD = '0.3.2'
 
 class COMPortSelectionWidget(QWidget):
     def __init__(self):
@@ -14,8 +14,8 @@ class COMPortSelectionWidget(QWidget):
         self.versions = []
         self.comport_checkboxes = []
         self.version_labels = []
-        self.unused_device_count = 0  # Initialize the count of unused devices
-        self.unused_device_label = QLabel()  # Label to display the count
+        self.unused_device_count = 0
+        self.unused_device_label = QLabel()
         self.initUI()
 
     def initUI(self):
@@ -28,7 +28,7 @@ class COMPortSelectionWidget(QWidget):
         select_all_checkbox.stateChanged.connect(self.toggle_select_all)
         layout.addWidget(select_all_checkbox)
 
-        hbox = QHBoxLayout()  # Horizontal layout for version selection
+        hbox = QHBoxLayout()
         self.version_combo = QComboBox(self)
         hbox.addWidget(self.version_combo)
 
@@ -38,20 +38,20 @@ class COMPortSelectionWidget(QWidget):
 
         layout.addLayout(hbox)
         
-        layout.addWidget(self.unused_device_label)  # Add the unused device count label to the layout
+        layout.addWidget(self.unused_device_label)
 
         for com_port in self.scan_firmware_versions():
-            hbox = QHBoxLayout()  # Horizontal layout for each COM port entry
+            hbox = QHBoxLayout()
 
             checkbox = QCheckBox(f'COM{com_port}', self)
             hbox.addWidget(checkbox)
             self.comport_checkboxes.append(checkbox)
 
-            version_label = QLabel()  # Version label
+            version_label = QLabel()
             hbox.addWidget(version_label)
             self.version_labels.append(version_label)
 
-            layout.addLayout(hbox)  # Add the horizontal layout to the main layout
+            layout.addLayout(hbox)
 
         confirm_button = QPushButton('Update', self)
         confirm_button.clicked.connect(self.start_execution)
@@ -68,7 +68,7 @@ class COMPortSelectionWidget(QWidget):
             checkbox.setChecked(state == 2)
 
     def scan_firmware_versions(self):
-        self.unused_device_count = 0  # Reset the count
+        self.unused_device_count = 0
         keyword = "Exar"
         available_ports = list(serial.tools.list_ports.comports())
         filtered_ports = filter_com_ports(available_ports, keyword)
@@ -76,13 +76,25 @@ class COMPortSelectionWidget(QWidget):
 
         loader_versions = []
         loader_directory = "W:\\Sestavy_elektro\\Detektory\\Toy18_Baby18_serie\\Boards\\AMY17\\Firmware\\MCU"
-        for entry in os.listdir(loader_directory):
-            if entry.startswith("v") and entry[1:].isdigit():
-                loader_versions.append(int(entry[1:]))
-
-        loader_versions = sorted(loader_versions, reverse=True)
-
-        self.version_combo.addItems([f'Loader v{version}' for version in loader_versions])
+        
+        try:
+            for entry in os.listdir(loader_directory):
+                if entry.startswith("v") and entry[1:].isdigit():
+                    loader_versions.append(int(entry[1:]))
+            
+            loader_versions = sorted(loader_versions, reverse=True)
+            
+            if not loader_versions:
+                self.version_combo.addItem("No versions found")
+            else:
+                self.version_combo.addItems([f'Loader v{version}' for version in loader_versions])
+        
+        except FileNotFoundError:
+            print(f"Warning: Directory '{loader_directory}' not found.")
+            self.version_combo.addItem("Unable to load firmware versions")
+        except Exception as e:
+            print(f"Error loading firmware versions: {str(e)}")
+            self.version_combo.addItem("Error loading versions")
 
         for com_port, version_label in zip(com_port_numbers, self.version_labels):
             threading.Thread(target=self.get_firmware_version, args=(f"COM{com_port}", version_label)).start()
@@ -99,25 +111,30 @@ class COMPortSelectionWidget(QWidget):
             ser.close()
             firmware_version = response[3:] if response.startswith("SWr") else "Unknown"
             if firmware_version != "Unknown":
-                self.unused_device_count += 1  # Increment the count for unused devices
-            version_label.setText(f'Firmware: {firmware_version}')  # Update version label
+                self.unused_device_count += 1
+            version_label.setText(f'Firmware: {firmware_version}')
         except PermissionError:
             version_label.setText("Firmware: In Use")
         except Exception as e:
             print(f"Error accessing COM port {com_port}: {e}")
             version_label.setText("Firmware: Access Denied")
         finally:
-            self.unused_device_label.setText(f"Unused Devices: {self.unused_device_count}")  # Update the label with the count
+            self.unused_device_label.setText(f"Unused Devices: {self.unused_device_count}")
 
     def start_execution(self):
         print("Updating firmware...")
         selected_ports = [com_port for com_port, checkbox in zip(self.scan_firmware_versions(), self.comport_checkboxes) if checkbox.isChecked()]
         selected_version_text = self.version_combo.currentText()
-        selected_version = int(selected_version_text.split()[-1].lstrip('v'))
+        
+        try:
+            selected_version = int(selected_version_text.split()[-1].lstrip('v'))
+        except ValueError:
+            print("Unable to get firmware version. Update will not start.")
+            return
 
         if selected_ports and selected_version:
             self.execution_thread = BatchExecutionThread(selected_ports, "script.bat", selected_version, self)
-            self.execution_thread.start()  # Start the execution thread
+            self.execution_thread.start()
         else:
             print("No COM ports or loader version selected for update.")
 
@@ -128,7 +145,6 @@ class COMPortSelectionWidget(QWidget):
         print("Closing AutoLoad...")
         sys.exit()
 
-# Serial communication functions
 def filter_com_ports(ports, keyword):
     return [port for port in ports if keyword in port.description]
 
@@ -154,7 +170,7 @@ class BatchExecutionThread(threading.Thread):
             processes.append(process)
 
         for process in processes:
-            process.wait()  # Wait for each process to complete
+            process.wait()
 
         self.gui.execution_complete()
 
