@@ -1,42 +1,64 @@
 # AutoLoad
 ## for ECOM Flash Service
-### Version: 0.3
+### Version: 0.3.4
 
 **AutoLoad** is an automation tool designed to simplify the process of updating firmware on multiple devices using the ECOM Flash Service application. It provides an easy-to-use graphical user interface (GUI) for selecting COM ports and loader versions, enabling efficient and hassle-free firmware updates.
 
 ### Features:
 
-1. **Intuitive GUI:** AutoLoad offers a user-friendly interface that eliminates the need for complex commands or scripts. Users can easily select COM ports and loader versions with a few clicks.
+1. **Intuitive GUI:** 
+   - User-friendly interface with split-view layout
+   - Real-time logging window for operation monitoring
+   - Easy COM port selection with device status display
+   - Simple loader version selection via dropdown menu
 
-2. **Multi-Device Support:** Configure and update multiple devices simultaneously. AutoLoad allows you to select multiple COM ports and loader versions, streamlining the update process.
+2. **Multi-Device Support:** 
+   - Configure and update multiple devices simultaneously
+   - Real-time device status monitoring
+   - Automatic unused device detection
+   - Parallel update execution in separate threads
 
-3. **Dynamic Loader Versions:** The application dynamically fetches available loader versions from the specified directory. You can add new loader versions to your directory, and AutoLoad will automatically detect and list them.
+3. **Dynamic Loader Versions:** 
+   - Automatic detection of available loader versions
+   - Support for new loader versions without application changes
+   - Version compatibility checking
 
-4. **Error Handling:** AutoLoad provides basic error handling to ensure smooth updates. If any issues occur during the update process, AutoLoad allows you to handle errors manually. Each instance is executed in its own thread.
+4. **Advanced Features:**
+   - Test mode for simulation and debugging
+   - Command-line interface for version display
+   - Comprehensive error handling and reporting
+   - Operation logging with detailed status updates
 
-### Getting Started:
+### Installation:
 
-1. Launch AutoLoad by running the "AutoLoad.py" script.
-2. Select the COM ports to update by checking the corresponding checkboxes.
-3. Choose the desired loader version from the dropdown menu.
-4. Click the "Update" button to start the update process.
+1. Download both `AutoLoad.exe` and `script.bat` from the latest release
+2. Place both files in the same directory
+3. Run `AutoLoad.exe`
 
 ### Usage:
 
-AutoLoad simplifies the firmware update process, whether you need to update a single device or multiple devices in batch mode. It offers an efficient solution with a user-friendly interface.
+1. Launch AutoLoad by running the executable
+2. Select the COM ports to update by checking the corresponding checkboxes
+3. Choose the desired loader version from the dropdown menu
+4. Click the "Update" button to start the update process
+5. Monitor the progress in the log window
 
-Please note that AutoLoad is currently in version 0.3, and future updates may include additional features and enhancements.
+Additional command-line options:
+```bash
+AutoLoad.exe --version  # Display version
+AutoLoad.exe --test     # Run in test mode
+```
 
 ### System Requirements:
 
-- Python 3.7 or higher
-- PyQt5 library
+- Windows operating system
+- Network access to firmware repository location
 
 ### Feedback and Support:
 
-For any questions, issues, or feedback, please contact me at [filip.balakovski@gmail.com](mailto:filip.balakovski@gmail.com).
+For any questions, issues, or feedback, please contact [filip.balakovski@gmail.com](mailto:filip.balakovski@gmail.com).
 
-Thank you for using AutoLoad! I hope it simplifies your firmware update process and enhances your user experience.
+Thank you for using AutoLoad! We hope it simplifies your firmware update process and enhances your user experience.
 
 ---
 
